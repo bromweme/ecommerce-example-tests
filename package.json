@@ -1,0 +1,25 @@
+{
+  "name": "qa-automation",
+  "version": "1.0.0",
+  "description": "Test suite for automationexercise",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright test show-report"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "devDependencies": {
+    "@faker-js/faker": "^10.6.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.4"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.8"
+  }
+}
