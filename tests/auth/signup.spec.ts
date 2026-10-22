@@ -75,8 +75,8 @@ import { faker } from '@faker-js/faker';
         await loginPage.register({ name: user.account.name, email: user.email});
 
         await signupPage.accountInfoSection.selectTitle('Mrs');
-        expect(await signupPage.accountInfoSection.getTitle('Mrs').isChecked()).toBe(true);
-        expect(await signupPage.accountInfoSection.getTitle('Mr').isChecked()).toBe(false);
+        await expect( signupPage.accountInfoSection.getTitle('Mrs')).toBeChecked({ checked: true });
+        await expect( signupPage.accountInfoSection.getTitle('Mr')).toBeChecked({ checked: false });
     });
 
     test('should populate all account information fields correctly', async ({ loginPage, signupPage }) => {

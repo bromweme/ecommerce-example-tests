@@ -1,57 +1,81 @@
- import { test, expect } from '../../../fixtures/fixtures';
+import { AuthController } from '../../../api/AuthController';
+import { test, expect } from '../../../fixtures/fixtures';
  
- test.describe('Login API', () => {
+ test.describe('verifyLogin API', () => {
 
-    test('POST /api/login should succeed with valid credentials', async ({ request }) => {
-      const response = await request.post(`${BASE_URL}/api/login`, {
-        data: { email: 'demo@techmart.com', password: 'demo123' }
-      });
-      
+    test('POST /api/verifyLogin should succeed with valid credentials', async ({ request }) => {
+      const authController = new AuthController(request);
+      const response = await authController.verifyLogin("michael1@testorg.com", "test123");
+
       expect(response.ok()).toBeTruthy();
       
       const data = await response.json();
-      expect(data.message).toBe('Login successful');
-      expect(data.user.email).toBe('demo@techmart.com');
+      console.log(data);
+      expect(data.message).toBe('User exists!');
     });
 
-    test('POST /api/login should fail with invalid credentials', async ({ request }) => {
-      const response = await request.post(`${BASE_URL}/api/login`, {
-        data: { email: 'wrong@email.com', password: 'wrongpassword' }
-      });
-      
-      expect(response.status()).toBe(401);
-      
+    test('POST /api/verifyLogin should fail with invalid credentials', async ({ request }) => {
+      const authController = new AuthController(request);
+      const response = await authController.verifyLogin('wrong@email.com', 'wrongpassword');
       const data = await response.json();
-      expect(data.error).toBe('Invalid credentials');
+      console.log(data);
+
+      expect(data.responseCode).toBe(404);
+      
+      expect(data.message).toBe('User not found!');
     });
 
-    test('POST /api/login should require email and password', async ({ request }) => {
-      const response = await request.post(`${BASE_URL}/api/login`, {
-        data: {}
-      });
-      
-      expect(response.status()).toBe(400);
+    test('POST /api/verifyLogin should require email and password', async ({ request }) => {
+      const authController = new AuthController(request);
+      const response = await authController.verifyLogin('', '');
       
       const data = await response.json();
-      expect(data.error).toBe('Email and password required');
+
+      expect(data.responseCode).toBe(400);
+      
+      expect(data.message).toBe('Bad request, email or password parameter is missing in POST request.');
+    });
+  });
+
+  test.describe('createAccount API', () => {
+    
+    test.beforeEach(async ({ request }) => {
+      
     });
 
-    test('POST /api/register should create new user', async ({ request }) => {
-      const uniqueEmail = `test${Date.now()}@example.com`;
-      
-      const response = await request.post(`${BASE_URL}/api/register`, {
-        data: {
-          name: 'Test User',
-          email: uniqueEmail,
-          password: 'password123'
-        }
-      });
-      
-      expect(response.status()).toBe(201);
+    test('POST /api/createAccount should create new user', async ({ request }) => {
+      const uniqueEmail = `test${test.info().testId}@testorg.com`;
+      console.log(uniqueEmail);
+      const authController = new AuthController(request);
+      const response = await authController.createAccount(
+        'Test User',
+        uniqueEmail,
+        'password123',
+        'Mr',
+          '01',
+          '01',
+          '1990',
+          'Test',
+          'User',
+          'Test Company',
+          '123 Test Street',
+          'Suite 100',
+          'USA',
+          '12345',
+          'CA',
+          'Test City',
+          '555-555-5555'
+      );
       
       const data = await response.json();
-      expect(data.message).toBe('Registration successful');
-      expect(data.user.email).toBe(uniqueEmail);
+      expect(data.responseCode).toBe(201);
+      expect(data.message).toBe('User created!');
     });
+
+    test.afterEach(async ({ request }) => {
+      // get the email and password from the test context
+      console.log(test.info().testId);
+    });
+
 
   });
